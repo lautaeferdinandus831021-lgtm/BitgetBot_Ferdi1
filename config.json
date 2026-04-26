@@ -4,7 +4,7 @@
   "api_passphrase": "",
   "demo": true,
 
-  "market_mode": "spot",
+  "market_mode": "perp", 
   "symbol": "BTCUSDT",
 
   "order_size": 50,
@@ -13,13 +13,30 @@
   "tp_percent": 2.5,
   "sl_percent": 1.5,
 
-  "leverage": 3,
+  "use_tp_sl": true,
+  "use_trailing": false,
+  "trailing_percent": 1.0,
+
+  "leverage": 5,
   "margin_mode": "crossed",
+  "position_mode": "one_way", 
 
   "order_type": "market",
   "limit_offset": 0.2,
 
   "strategy": "weighted_score",
+
+  "filters": {
+    "trend_filter": true,
+    "sideways_filter": true,
+    "volatility_filter": true
+  },
+
+  "risk_management": {
+    "risk_per_trade_percent": 1.0,
+    "max_daily_loss_percent": 5.0,
+    "max_open_positions": 3
+  },
 
   "indicators": {
     "rsi": {
