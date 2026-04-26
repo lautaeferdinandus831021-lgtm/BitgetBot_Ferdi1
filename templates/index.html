@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BG-BOT v5 (Optimized)</title>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+
+<style>
+body{background:#0b0f14;color:#e6edf3;font-family:Arial;margin:0}
+.hdr{display:flex;justify-content:space-between;padding:10px;background:#111}
+.btn{padding:6px 10px;border:none;background:#00d4aa;color:#000;cursor:pointer}
+.chart{height:250px}
+</style>
+</head>
+
+<body>
+
+<div class="hdr">
+  <div>BG-BOT v5 ⚡</div>
+  <button class="btn" onclick="toggleBot()">START</button>
+</div>
+
+<div id="chart" class="chart"></div>
+
+<script>
+let socket;
+let chart, candleSeries;
+let buffer = [];
+let isRunning = false;
+let lastUpdate = 0;
+
+/* =========================
+   INIT CHART (ANTI LAG)
+========================= */
+function initChart(){
+  chart = LightweightCharts.createChart(document.getElementById('chart'), {
+    layout:{background:{color:"#0b0f14"},textColor:"#aaa"},
+    width:window.innerWidth,
+    height:250
+  });
+
+  candleSeries = chart.addCandlestickSeries();
+}
+
+/* =========================
+   UPDATE CHART (THROTTLE)
+========================= */
+function updateChart(data){
+  const now = Date.now();
+
+  // throttle 200ms (anti lag)
+  if(now - lastUpdate < 200) return;
+  lastUpdate = now;
+
+  if(data.length){
+    candleSeries.setData(data);
+  }
+}
+
+/* =========================
+   AI DECISION (IMPROVED)
+========================= */
+function analyzeSignal(indicators){
+  let score = 0;
+
+  if(indicators.rsi < 30) score++;
+  if(indicators.macd > 0) score++;
+  if(indicators.ema_fast > indicators.ema_slow) score++;
+
+  if(score >= 2) return "BUY";
+  if(score <= -2) return "SELL";
+  return "WAIT";
+}
+
+/* =========================
+   WEBSOCKET STABLE
+========================= */
+function initSocket(){
+  socket = io({
+    reconnection:true,
+    reconnectionAttempts:Infinity,
+    reconnectionDelay:1000,
+    timeout:10000
+  });
+
+  socket.on('connect',()=>{
+    log("WS Connected");
+  });
+
+  socket.on('disconnect',()=>{
+    log("WS Disconnected");
+  });
+
+  socket.on('connect_error',()=>{
+    log("Reconnect...");
+  });
+
+  socket.on('chart',data=>{
+    updateChart(data.candles);
+
+    const decision = analyzeSignal(data.indicators);
+    log("AI: "+decision);
+  });
+}
+
+/* =========================
+   BOT CONTROL
+========================= */
+function toggleBot(){
+  if(!socket.connected) return log("WS belum connect");
+
+  if(isRunning){
+    socket.emit("stop_bot");
+    log("STOP BOT");
+  }else{
+    socket.emit("start_bot");
+    log("START BOT");
+  }
+
+  isRunning = !isRunning;
+}
+
+/* =========================
+   LOG SYSTEM (LIGHTWEIGHT)
+========================= */
+function log(msg){
+  console.log(new Date().toLocaleTimeString(), msg);
+}
+
+/* =========================
+   INIT
+========================= */
+window.onload = ()=>{
+  initChart();
+  initSocket();
+};
+</script>
+
+</body>
+</html>
