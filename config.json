@@ -1,0 +1,59 @@
+{
+  "api_key": "",
+  "api_secret": "",
+  "api_passphrase": "",
+  "demo": true,
+
+  "market_mode": "spot",
+  "symbol": "BTCUSDT",
+
+  "order_size": 50,
+  "max_positions": 3,
+
+  "tp_percent": 2.5,
+  "sl_percent": 1.5,
+
+  "leverage": 3,
+  "margin_mode": "crossed",
+
+  "order_type": "market",
+  "limit_offset": 0.2,
+
+  "strategy": "weighted_score",
+
+  "indicators": {
+    "rsi": {
+      "enabled": true,
+      "period": 14,
+      "overbought": 70,
+      "oversold": 30
+    },
+    "macd": {
+      "enabled": true,
+      "fast": 12,
+      "slow": 26,
+      "signal": 9
+    },
+    "bb": {
+      "enabled": true,
+      "period": 20,
+      "std_dev": 2
+    },
+    "ema": {
+      "enabled": true,
+      "fast": 9,
+      "slow": 21
+    },
+    "stoch": {
+      "enabled": false,
+      "k_period": 14,
+      "d_period": 3,
+      "smooth": 3
+    },
+    "atr": {
+      "enabled": true,
+      "period": 14,
+      "multiplier": 1.5
+    }
+  }
+}
